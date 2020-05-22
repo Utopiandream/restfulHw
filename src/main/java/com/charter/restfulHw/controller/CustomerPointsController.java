@@ -4,17 +4,17 @@ import java.util.List;
 
 import com.charter.restfulHw.model.CustomerPoints;
 import com.charter.restfulHw.model.QuarterlyTransactions;
-import com.charter.restfulHw.service.CustomerPointService;
+import com.charter.restfulHw.service.CustomerPointsService;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class CustomerPointController {
+public class CustomerPointsController {
 
-    private CustomerPointService customerPointService;
+    private CustomerPointsService customerPointService;
 
-    public CustomerPointController(CustomerPointService customerPointService){
+    public CustomerPointsController(CustomerPointsService customerPointService){
         this.customerPointService = customerPointService;
     }
 

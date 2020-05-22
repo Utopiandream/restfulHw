@@ -11,31 +11,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class PointsServiceImplTest
+public class CustomerPointsServiceImplTest
 {
     @Autowired
-    private PointsServiceImpl pointsServiceImpl;
+    private CustomerPointsServiceImpl customerPointsServiceImpl;
 
     @Before
     public void setup()
     {
-        pointsServiceImpl = new PointsServiceImpl();
+        customerPointsServiceImpl = new CustomerPointsServiceImpl();
     }
     
     @After
     public void teardown()
     {
-        this.pointsServiceImpl = null;
+        this.customerPointsServiceImpl = null;
     }
 
     @Test 
     public void testCalculatePoints_nullValue(){
-        assertThat(pointsServiceImpl.calculatePoints(null)).isZero();
+        assertThat(customerPointsServiceImpl.calculatePoints(null)).isZero();
     }
 
     @Test 
     public void testCalculatePoints_negativeValue(){
-        assertThat(pointsServiceImpl.calculatePoints(new BigDecimal("-1"))).isZero();
+        assertThat(customerPointsServiceImpl.calculatePoints(new BigDecimal("-1"))).isZero();
     }
 
     @Test 
@@ -45,9 +45,9 @@ public class PointsServiceImplTest
         BigDecimal midAmount = new BigDecimal("25");
         BigDecimal maxAmount = new BigDecimal("50");
         //when
-        long minResult = pointsServiceImpl.calculatePoints(minAmount);
-        long midResult = pointsServiceImpl.calculatePoints(midAmount);
-        long maxResult = pointsServiceImpl.calculatePoints(maxAmount);
+        long minResult = customerPointsServiceImpl.calculatePoints(minAmount);
+        long midResult = customerPointsServiceImpl.calculatePoints(midAmount);
+        long maxResult = customerPointsServiceImpl.calculatePoints(maxAmount);
         //then
         assertThat(minResult).isZero();
         assertThat(midResult).isZero();
@@ -61,9 +61,9 @@ public class PointsServiceImplTest
         BigDecimal midAmount = new BigDecimal("75");
         BigDecimal maxAmount = new BigDecimal("100");
         //when
-        long minResult = pointsServiceImpl.calculatePoints(minAmount);
-        long midResult = pointsServiceImpl.calculatePoints(midAmount);
-        long maxResult = pointsServiceImpl.calculatePoints(maxAmount);
+        long minResult = customerPointsServiceImpl.calculatePoints(minAmount);
+        long midResult = customerPointsServiceImpl.calculatePoints(midAmount);
+        long maxResult = customerPointsServiceImpl.calculatePoints(maxAmount);
         //then
         assertThat(minResult).isEqualTo(minAmount.subtract(new BigDecimal("50")).longValue());
         assertThat(midResult).isEqualTo(midAmount.subtract(new BigDecimal("50")).longValue());
@@ -77,9 +77,9 @@ public class PointsServiceImplTest
         Long midAmount = 120L;
         Long highAmount = 2342L;
         //when
-        long minResult = pointsServiceImpl.calculatePoints(new BigDecimal(minAmount));
-        long midResult = pointsServiceImpl.calculatePoints(new BigDecimal(midAmount));
-        long highResult = pointsServiceImpl.calculatePoints(new BigDecimal(highAmount));
+        long minResult = customerPointsServiceImpl.calculatePoints(new BigDecimal(minAmount));
+        long midResult = customerPointsServiceImpl.calculatePoints(new BigDecimal(midAmount));
+        long highResult = customerPointsServiceImpl.calculatePoints(new BigDecimal(highAmount));
         //then
         assertThat(minResult).isEqualTo(50 + ((minAmount - 100) * 2));
         assertThat(midResult).isEqualTo(50 + ((midAmount - 100) * 2));
@@ -88,8 +88,8 @@ public class PointsServiceImplTest
 
     @Test 
     public void testCalculatePoints_truncsDecimal(){
-        assertThat(pointsServiceImpl.calculatePoints(new BigDecimal("51.0001"))).isEqualTo(1L);
-        assertThat(pointsServiceImpl.calculatePoints(new BigDecimal("51.9999"))).isEqualTo(1L);
+        assertThat(customerPointsServiceImpl.calculatePoints(new BigDecimal("51.0001"))).isEqualTo(1L);
+        assertThat(customerPointsServiceImpl.calculatePoints(new BigDecimal("51.9999"))).isEqualTo(1L);
     }
 
 }
