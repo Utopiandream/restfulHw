@@ -14,7 +14,7 @@ public class Transaction {
 
     private LocalDate date;
 
-    private long memberId;
+    private long customerId;
 
     private String firstName;
 

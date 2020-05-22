@@ -9,9 +9,11 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class QuarterlyTransactions {
+
     private LocalDate startDate;
 
     private LocalDate endDate;
 
     private List<Transaction> transactions;
+    
 }

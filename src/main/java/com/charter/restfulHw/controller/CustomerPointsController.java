@@ -2,11 +2,12 @@ package com.charter.restfulHw.controller;
 
 import java.util.Map;
 
-import com.charter.restfulHw.model.CustomerPoints;
+import com.charter.restfulHw.model.Customer;
 import com.charter.restfulHw.model.QuarterlyTransactions;
 import com.charter.restfulHw.service.CustomerPointsService;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -25,9 +26,9 @@ public class CustomerPointsController {
     }
 
     @GetMapping("/quarterly")
-    public Map<Long, CustomerPoints> getCustomerPoints(QuarterlyTransactions quarterlyTransactions)
+    public Map<Long, Customer> getCustomersPoints(@RequestBody QuarterlyTransactions quarterlyTransactions)
     {
-        return customerPointService.getCustomerPoints(quarterlyTransactions);
+        return customerPointService.getCustomersPoints(quarterlyTransactions);
     }
 
 }

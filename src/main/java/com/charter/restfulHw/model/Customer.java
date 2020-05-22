@@ -7,14 +7,14 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class CustomerPoints {
+public class Customer {
 
-    private long memberId;
+    private long customerId;
 
     private String firstName;
 
     private String lastName;
 
-    private Map<Long, Long> monthlyPoints;
+    private Map<Integer, Long> monthlyPoints;
     
 }
