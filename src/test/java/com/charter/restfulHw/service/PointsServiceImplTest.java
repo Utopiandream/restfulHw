@@ -83,7 +83,7 @@ public class PointsServiceImplTest
         //then
         assertThat(minResult).isEqualTo(50 + ((minAmount - 100) * 2));
         assertThat(midResult).isEqualTo(50 + ((midAmount - 100) * 2));
-        assertThat(highResult).isEqualTo(50 + ((minAmount - 100) * 2));
+        assertThat(highResult).isEqualTo(50 + ((highAmount - 100) * 2));
     }
 
     @Test 
