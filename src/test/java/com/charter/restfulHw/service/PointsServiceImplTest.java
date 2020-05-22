@@ -1,29 +1,41 @@
 package com.charter.restfulHw.service;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 
-public class PointsServiceImplTest {
+import org.junit.After;
+import org.junit.Before;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+public class PointsServiceImplTest
+{
+    @Autowired
     private PointsServiceImpl pointsServiceImpl;
 
-    @BeforeAll
+    @Before
     public void setup()
     {
         pointsServiceImpl = new PointsServiceImpl();
     }
+    
+    @After
+    public void teardown()
+    {
+        this.pointsServiceImpl = null;
+    }
 
     @Test 
     public void testCalculatePoints_nullValue(){
-        assertThat(pointsServiceImpl.calculatePoints(null)).isNull();
+        assertThat(pointsServiceImpl.calculatePoints(null)).isZero();
     }
 
     @Test 
     public void testCalculatePoints_negativeValue(){
-        assertThat(pointsServiceImpl.calculatePoints(new BigDecimal("-1"))).isNull();
+        assertThat(pointsServiceImpl.calculatePoints(new BigDecimal("-1"))).isZero();
     }
 
     @Test 
@@ -76,7 +88,8 @@ public class PointsServiceImplTest {
 
     @Test 
     public void testCalculatePoints_truncsDecimal(){
-        assertThat(pointsServiceImpl.calculatePoints(new BigDecimal("51.99"))).isEqualTo(1L);
+        assertThat(pointsServiceImpl.calculatePoints(new BigDecimal("51.0001"))).isEqualTo(1L);
+        assertThat(pointsServiceImpl.calculatePoints(new BigDecimal("51.9999"))).isEqualTo(1L);
     }
 
 }
