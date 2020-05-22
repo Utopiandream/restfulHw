@@ -1,10 +1,14 @@
 package com.charter.restfulHw.service;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.charter.restfulHw.model.CustomerPoints;
 import com.charter.restfulHw.model.QuarterlyTransactions;
+import com.charter.restfulHw.model.Transaction;
 
 import org.springframework.stereotype.Service;
 
@@ -12,10 +16,23 @@ import org.springframework.stereotype.Service;
 public class CustomerPointsServiceImpl implements CustomerPointsService {
 
     @Override
-    public List<CustomerPoints> getCustomerPoints(QuarterlyTransactions quarterlyTransactions) {
-        // TODO Auto-generated method stub
+    public Map<Long, CustomerPoints> getCustomerPoints(QuarterlyTransactions quarterlyTransactions) {
+        
+        if(quarterlyTransactions == null || quarterlyTransactions.getStartDate() == null || quarterlyTransactions.getEndDate() == null || quarterlyTransactions.getTransactions() == null)
+            throw new IllegalArgumentException("StartDate, EndDate, and Transaction List cannot be null!");
+        LocalDate startDate = quarterlyTransactions.getStartDate().with(TemporalAdjusters.firstDayOfMonth());
+        LocalDate endDate = quarterlyTransactions.getEndDate().with(TemporalAdjusters.lastDayOfMonth());
+        if(startDate.isAfter(endDate)) throw new IllegalArgumentException("StartDate cannot be after EndDate!");
+        
+        for (Transaction transaction : quarterlyTransactions.getTransactions()) {
+            LocalDate transactionDate = transaction.getDate();
+            if(transactionDate.isBefore(startDate) || transactionDate.isAfter(endDate)) continue;
+            
+        }
 
-        return null;
+        Map<Long, CustomerPoints> customerPoints = new HashMap<Long, CustomerPoints>();
+        
+        return customerPoints;
     }
 
     @Override

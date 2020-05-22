@@ -1,6 +1,6 @@
 package com.charter.restfulHw.model;
 
-import java.util.List;
+import java.util.Map;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -15,6 +15,6 @@ public class CustomerPoints {
 
     private String lastName;
 
-    private List<MonthlyPoints> monthlyPoints;
+    private Map<Long, Long> monthlyPoints;
     
 }

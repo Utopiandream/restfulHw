@@ -1,7 +1,9 @@
 package com.charter.restfulHw.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import com.charter.restfulHw.model.CustomerPoints;
 import com.charter.restfulHw.model.QuarterlyTransactions;
@@ -10,13 +12,11 @@ import com.charter.restfulHw.service.CustomerPointsService;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class CustomerPointsControllerUnitTest {
     
     @Test
     public void testCalculateCustomerPoints(){
-        List<CustomerPoints> customerPoints = new ArrayList<CustomerPoints>();
+        Map<Long, CustomerPoints> customerPoints = new HashMap<Long, CustomerPoints>();
         QuarterlyTransactions quarterlyTransactions = new QuarterlyTransactions();
         CustomerPointsService customerPointService = EasyMock.createMock(CustomerPointsService.class);
         CustomerPointsController controller = new CustomerPointsController(customerPointService);

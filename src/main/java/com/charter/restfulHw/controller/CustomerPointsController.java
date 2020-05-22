@@ -1,6 +1,6 @@
 package com.charter.restfulHw.controller;
 
-import java.util.List;
+import java.util.Map;
 
 import com.charter.restfulHw.model.CustomerPoints;
 import com.charter.restfulHw.model.QuarterlyTransactions;
@@ -25,7 +25,7 @@ public class CustomerPointsController {
     }
 
     @GetMapping("/quarterly")
-    public List<CustomerPoints> getCustomerPoints(QuarterlyTransactions quarterlyTransactions)
+    public Map<Long, CustomerPoints> getCustomerPoints(QuarterlyTransactions quarterlyTransactions)
     {
         return customerPointService.getCustomerPoints(quarterlyTransactions);
     }
