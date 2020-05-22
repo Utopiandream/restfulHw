@@ -140,9 +140,6 @@ public class CustomerPointsServiceImplTest {
                 () -> customerPointsServiceImpl.getCustomersPoints(quarterlyTransactions));
     }
 
-
-
-
     @Test
     public void testGetCustomerPoints_transactionsEmpty() {
         QuarterlyTransactions quarterlyTransactions = new QuarterlyTransactions();
@@ -203,20 +200,21 @@ public class CustomerPointsServiceImplTest {
         quarterlyTransactions.setStartDate(startDate);
         quarterlyTransactions.setEndDate(endDate);
         quarterlyTransactions.setTransactions(new ArrayList<Transaction>());
+        Transaction transaction = createMockTranscation();
         Transaction transaction2 = createMockTranscation();
         transaction2.setCustomerId(2);
-        quarterlyTransactions.getTransactions().add(createMockTranscation());
-        quarterlyTransactions.getTransactions().add(createMockTranscation());
-        quarterlyTransactions.getTransactions().add(createMockTranscation());
+        quarterlyTransactions.getTransactions().add(transaction);
+        quarterlyTransactions.getTransactions().add(transaction);
+        quarterlyTransactions.getTransactions().add(transaction);
         quarterlyTransactions.getTransactions().add(transaction2);
 
-        // Only two customers
         Map<Long, Customer> results = customerPointsServiceImpl.getCustomersPoints(quarterlyTransactions);
         assertThat(results.size()).isEqualTo(2);
-        Transaction transaction = createMockTranscation();
+        
         Map<Integer, Long> monthlyPonts1 = results.get(transaction.getCustomerId()).getMonthlyPoints();
         assertThat(monthlyPonts1.get(transaction.getDate().getMonthValue()))
                 .isEqualTo(customerPointsServiceImpl.calculatePoints(transaction.getAmount()) * 3);
+
         Map<Integer, Long> monthlyPonts2 = results.get(transaction2.getCustomerId()).getMonthlyPoints();
         assertThat(monthlyPonts2.get(transaction2.getDate().getMonthValue()))
                 .isEqualTo(customerPointsServiceImpl.calculatePoints(transaction2.getAmount()));
@@ -228,10 +226,12 @@ public class CustomerPointsServiceImplTest {
     // ---------------------initializeCustomerPoints------------------//
     // ---------------------------------------------------------------//
     @Test
-    public void testInitializeCustomerPoints_TranscationNullValues(){
-        Transaction transcation = createMockTranscation();
-        transcation.setDate(null);
-
-
+    public void testInitializeCustomerPoints_setsAllValues(){
+        Transaction transaction = createMockTranscation();
+        Customer customer = customerPointsServiceImpl.initializeCustomer(transaction);
+        assertThat(customer.getFirstName()).isEqualTo(transaction.getFirstName());
+        assertThat(customer.getLastName()).isEqualTo(transaction.getLastName());
+        assertThat(customer.getCustomerId()).isEqualTo(transaction.getCustomerId());
+        assertThat(customer.getMonthlyPoints().get(transaction.getDate().getMonthValue())).isNotNull();
     }
 }

@@ -24,29 +24,27 @@ public class CustomerPointsServiceImpl implements CustomerPointsService {
     public Map<Long, Customer> getCustomersPoints(QuarterlyTransactions quarterlyTransactions)
     {
         if (quarterlyTransactions == null) return null;
-        if (quarterlyTransactions.getStartDate() == null || quarterlyTransactions.getEndDate() == null
-        || quarterlyTransactions.getTransactions() == null) 
+        //Verify Dates
+        if (quarterlyTransactions.getStartDate() == null || quarterlyTransactions.getEndDate() == null || quarterlyTransactions.getTransactions() == null) 
             throw new IllegalArgumentException("StartDate, EndDate, and Transaction list cannot be null!");
-
+            
         LocalDate startDate = quarterlyTransactions.getStartDate().with(TemporalAdjusters.firstDayOfMonth());
         LocalDate endDate = quarterlyTransactions.getEndDate().with(TemporalAdjusters.lastDayOfMonth());
         if (startDate.isAfter(endDate)) throw new IllegalArgumentException("StartDate cannot be after EndDate!");
         if (ChronoUnit.MONTHS.between(startDate, endDate) > 2 )  throw new IllegalArgumentException("Date Range cannot exceed 3 months!");
             
-            
         Map<Long, Customer> mappedCustomerPoints = new HashMap<Long, Customer>();
         for (Transaction transaction : quarterlyTransactions.getTransactions()) 
         {
-            try {  
-                verifyTransaction(transaction, startDate, endDate); 
-            }
+            try { verifyTransaction(transaction, startDate, endDate); }
             catch (IllegalArgumentException e) {
                 logger.warn("SKIPPED Transaction Id: {}, MemberId: {} Reason: {}", transaction.getTransactionId(), transaction.getCustomerId(), e.getMessage());
                 continue;
             }
 
             long customerId = transaction.getCustomerId();
-            if (mappedCustomerPoints.get(customerId) == null) // if not yet mapped, initialize
+            // if not yet mapped, initialize customer and insert
+            if (mappedCustomerPoints.get(customerId) == null) 
                 mappedCustomerPoints.put(customerId, initializeCustomer(transaction));
             else { // else addon to existing customer points for that month
                 Map<Integer, Long> monthlyPoints = mappedCustomerPoints.get(customerId).getMonthlyPoints();
