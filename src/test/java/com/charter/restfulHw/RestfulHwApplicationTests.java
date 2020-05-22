@@ -1,13 +1,10 @@
 package com.charter.restfulHw;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
 
-@SpringBootTest
-public class RestfulHwApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
+@ComponentScan(basePackageClasses = {
+    RestfulHwApplication.class
+})
+public class RestfulHwApplicationTests	{
+    
 }

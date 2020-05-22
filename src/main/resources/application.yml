@@ -1,0 +1,9 @@
+spring:
+  main:
+    banner-mode: "off"
+  application:
+    name: restfulHw
+  jackson.serialization:
+    write-dates-as-timestamps: false
+
+# server.context-path: /restfulHw
