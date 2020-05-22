@@ -1,0 +1,31 @@
+Configuration:
+  appenders:
+    Console:
+      name: CONSOLE
+      target: SYSTEM_OUT
+      PatternLayout:
+        Pattern: "${consoleLayout}"
+    RollingRandomAccessFile:
+      name: LOGFILE
+      fileName: "${env:LOG_BASE}/restfulHw.log"
+      filePattern: "${env:LOG_BASE}/restfulHw.log.%i"
+      PatternLayout:
+        pattern: "${defaultLayout}"
+      Policies:
+        SizeBasedTriggeringPolicy:
+          size: 4096KB
+      DefaultRolloverStrategy:
+        max: 5
+  Loggers:
+    Root:
+      AppenderRef:
+      - ref: Console
+      - ref: File
+      level: trace
+
+      properties:
+        property:
+          - name: defaultLayout
+            value: "%d{DEFAULT} %-5level [%T] %c{2.} - %msg%n"
+          - name: consoleLayout
+            value: "%d{HH:mm:ss.SSS} %-5level [%t] %c - %msg%n"
