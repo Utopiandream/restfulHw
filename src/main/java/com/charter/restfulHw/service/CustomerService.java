@@ -1,17 +1,16 @@
 package com.charter.restfulHw.service;
 
 import java.math.BigDecimal;
-import java.util.Map;
-
+import java.util.List;
 import com.charter.restfulHw.model.Customer;
-import com.charter.restfulHw.model.QuarterlyTransactions;
+import com.charter.restfulHw.model.Transaction;
 
 import org.springframework.stereotype.Service;
 
 @Service
-public interface CustomerPointsService 
+public interface CustomerService 
 {
-    public Map<Long, Customer> getCustomersPoints(QuarterlyTransactions quarterlyTransactions);
+    public List<Customer> getCustomers(List<Transaction> transactions);
 
     public Long calculatePoints(BigDecimal amount);
 }

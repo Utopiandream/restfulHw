@@ -4,16 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 
 import com.charter.restfulHw.model.Customer;
-import com.charter.restfulHw.model.QuarterlyTransactions;
 import com.charter.restfulHw.model.Transaction;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +23,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ActiveProfiles(profiles = "unitTest")
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class CustomerPointsServiceImplTest {
+public class CustomerServiceImplTest {
     @Autowired
-    private CustomerPointsServiceImpl customerPointsServiceImpl;
+    private CustomerServiceImpl customerPointsServiceImpl;
 
     @Before
     public void setup() {
-        customerPointsServiceImpl = new CustomerPointsServiceImpl();
+        customerPointsServiceImpl = new CustomerServiceImpl();
     }
 
     @After
@@ -42,7 +41,7 @@ public class CustomerPointsServiceImplTest {
     private Transaction createMockTranscation() {
         Transaction transaction = new Transaction();
         transaction.setAmount(new BigDecimal("100"));
-        transaction.setDate(LocalDate.now());
+        transaction.setDate(LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()));
         transaction.setCustomerId(1L);
         transaction.setFirstName("Doug");
         transaction.setLastName("Stroer");
@@ -121,122 +120,93 @@ public class CustomerPointsServiceImplTest {
     // ---------------------getCustomerPoints--------------------------//
     // ---------------------------------------------------------------//
     @Test
-    public void testGetCustomerPoints_QuarterlyTranscationsNull() {
-        assertThat(customerPointsServiceImpl.getCustomersPoints(null)).isNull();
-    }
-
-    @Test
     public void testGetCustomerPoints_transactionListNull() {
-        QuarterlyTransactions quarterlyTransactions = new QuarterlyTransactions();
-        quarterlyTransactions.setStartDate(LocalDate.now());
-        quarterlyTransactions.setEndDate(LocalDate.now());
-        Assertions.assertThrows(IllegalArgumentException.class,
-                () -> customerPointsServiceImpl.getCustomersPoints(quarterlyTransactions));
-    }
-
-    @Test
-    public void testGetCustomerPoints_DateRangeGreaterThan3Months() {
-        QuarterlyTransactions quarterlyTransactions = new QuarterlyTransactions();
-        quarterlyTransactions.setStartDate(LocalDate.now());
-        quarterlyTransactions.setEndDate(LocalDate.now().plusMonths(3));
-        quarterlyTransactions.setTransactions(new ArrayList<Transaction>());
-        quarterlyTransactions.getTransactions().add(createMockTranscation());
-        Assertions.assertThrows(IllegalArgumentException.class,
-                () -> customerPointsServiceImpl.getCustomersPoints(quarterlyTransactions));
+        assertThat(customerPointsServiceImpl.getCustomers(null)).isNull();
     }
 
     @Test
     public void testGetCustomerPoints_transactionsEmpty() {
-        QuarterlyTransactions quarterlyTransactions = new QuarterlyTransactions();
-        quarterlyTransactions.setStartDate(LocalDate.now());
-        quarterlyTransactions.setEndDate(LocalDate.now());
-        quarterlyTransactions.setTransactions(new ArrayList<Transaction>());
-        assertThat(customerPointsServiceImpl.getCustomersPoints(quarterlyTransactions)).isEmpty();
+        assertThat(customerPointsServiceImpl.getCustomers(new ArrayList<Transaction>())).isEmpty();
     }
 
     @Test
-    public void testGetCustomerPoints_startDateMonthAfterEnd() {
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = LocalDate.now().minusMonths(1);
-        QuarterlyTransactions quarterlyTransactions = new QuarterlyTransactions();
-        quarterlyTransactions.setStartDate(startDate);
-        quarterlyTransactions.setEndDate(endDate);
-        quarterlyTransactions.setTransactions(new ArrayList<Transaction>());
-        quarterlyTransactions.getTransactions().add(createMockTranscation());
-
-        Assertions.assertThrows(IllegalArgumentException.class,
-                () -> customerPointsServiceImpl.getCustomersPoints(quarterlyTransactions));
+    public void testGetCustomerPoints_transactionsWithNullValueIgnored() {
+        //given
+        List<Transaction> transactions = new ArrayList<Transaction>();
+        transactions.add(createMockTranscation().setFirstName(null));
+        transactions.add(createMockTranscation().setLastName(null));
+        transactions.add(createMockTranscation().setAmount(null));
+        transactions.add(createMockTranscation().setDate(null));
+        //when
+        List<Customer> results = customerPointsServiceImpl.getCustomers(transactions);
+        //then
+        assertThat(results).isEmpty();
     }
 
     @Test
-    public void testGetCustomerPoints_datesNull() {
-        QuarterlyTransactions quarterlyTransactions = new QuarterlyTransactions();
-        quarterlyTransactions.setTransactions(new ArrayList<Transaction>());
-        quarterlyTransactions.getTransactions().add(createMockTranscation());
-
-        Assertions.assertThrows(IllegalArgumentException.class,
-                () -> customerPointsServiceImpl.getCustomersPoints(quarterlyTransactions));
-    }
-
-    @Test
-    public void testGetCustomerPoints_transactionMonthNotWithinMonthlyDateRangeIgnored() {
-        LocalDate startDate = LocalDate.now().minusMonths(1);
-        LocalDate endDate = LocalDate.now();
-        QuarterlyTransactions quarterlyTransactions = new QuarterlyTransactions();
-        quarterlyTransactions.setStartDate(startDate);
-        quarterlyTransactions.setEndDate(endDate);
-        quarterlyTransactions.setTransactions(new ArrayList<Transaction>());
-        Transaction transaction = createMockTranscation();
-        // Transaction before date range
-        transaction.setDate(LocalDate.now().plusMonths(1));
-        quarterlyTransactions.getTransactions().add(transaction);
-        // Transaction after date range
-        transaction = createMockTranscation();
-        transaction.setDate(LocalDate.now().minusMonths(2));
-        quarterlyTransactions.getTransactions().add(transaction);
-        assertThat(customerPointsServiceImpl.getCustomersPoints(quarterlyTransactions)).isEmpty();
-    }
-
-    @Test
-    public void testGetCustomerPoints_sumsCustomerPointsPerMonth() {
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = LocalDate.now().plusMonths(2);
-        QuarterlyTransactions quarterlyTransactions = new QuarterlyTransactions();
-        quarterlyTransactions.setStartDate(startDate);
-        quarterlyTransactions.setEndDate(endDate);
-        quarterlyTransactions.setTransactions(new ArrayList<Transaction>());
+    public void testGetCustomerPoints_GroupsCustomerById() {
+        LocalDate dateMonth = createMockTranscation().getDate().with(TemporalAdjusters.firstDayOfMonth());
+        List<Transaction> transactions = new ArrayList<Transaction>();
         Transaction transaction = createMockTranscation();
         Transaction transaction2 = createMockTranscation();
         transaction2.setCustomerId(2);
-        quarterlyTransactions.getTransactions().add(transaction);
-        quarterlyTransactions.getTransactions().add(transaction);
-        quarterlyTransactions.getTransactions().add(transaction);
-        quarterlyTransactions.getTransactions().add(transaction2);
+        transactions.add(createMockTranscation());
+        transactions.add(createMockTranscation());
+        transactions.add(createMockTranscation());
+        transactions.add(transaction2);
 
-        Map<Long, Customer> results = customerPointsServiceImpl.getCustomersPoints(quarterlyTransactions);
+        List<Customer> results = customerPointsServiceImpl.getCustomers(transactions);
         assertThat(results.size()).isEqualTo(2);
         
-        Map<Integer, Long> monthlyPonts1 = results.get(transaction.getCustomerId()).getMonthlyPoints();
-        assertThat(monthlyPonts1.get(transaction.getDate().getMonthValue()))
+        for (Customer customer : results) {
+            if(customer.getCustomerId() == transaction.getCustomerId())
+            {
+                assertThat(customer.getMonthlyPoints().get(dateMonth))
                 .isEqualTo(customerPointsServiceImpl.calculatePoints(transaction.getAmount()) * 3);
-
-        Map<Integer, Long> monthlyPonts2 = results.get(transaction2.getCustomerId()).getMonthlyPoints();
-        assertThat(monthlyPonts2.get(transaction2.getDate().getMonthValue()))
-                .isEqualTo(customerPointsServiceImpl.calculatePoints(transaction2.getAmount()));
-
+            }
+            else {
+                assertThat(customer.getMonthlyPoints().get(dateMonth))
+                .isEqualTo(customerPointsServiceImpl.calculatePoints(transaction2.getAmount()));    
+            }
+        }
     }
 
+    @Test
+    public void testGetCustomerPoints_MapsPointsPerMonth() {
+        //given
+        LocalDate dateMonth = createMockTranscation().getDate().with(TemporalAdjusters.firstDayOfMonth());
+        List<Transaction> transactions = new ArrayList<Transaction>();
+        Transaction transaction1 = createMockTranscation().setDate(dateMonth);
+        Transaction transaction2 = createMockTranscation().setDate(dateMonth.plusMonths(1));
+        Transaction transaction3 = createMockTranscation().setDate(dateMonth.minusMonths(1));
+        
+        transactions.add(transaction1);
+        transactions.add(transaction2);
+        transactions.add(transaction3);
+
+        //when
+        List<Customer> results = customerPointsServiceImpl.getCustomers(transactions);
+        //then
+        assertThat(results.size()).isEqualTo(1);
+        Customer customerResult = results.get(0);
+        assertThat(customerResult.getMonthlyPoints().get(dateMonth)).isNotNull();
+        assertThat(customerResult.getMonthlyPoints().get(dateMonth.plusMonths(1))).isNotNull();
+        assertThat(customerResult.getMonthlyPoints().get(dateMonth.minusMonths(1))).isNotNull();
+    }
 
     // ---------------------------------------------------------------//
     // ---------------------initializeCustomerPoints------------------//
     // ---------------------------------------------------------------//
     @Test
     public void testInitializeCustomerPoints_setsAllValues(){
+        //given
         Transaction transaction = createMockTranscation();
+        //when
         Customer customer = customerPointsServiceImpl.initializeCustomer(transaction);
+        //then
         assertThat(customer.getFirstName()).isEqualTo(transaction.getFirstName());
         assertThat(customer.getLastName()).isEqualTo(transaction.getLastName());
         assertThat(customer.getCustomerId()).isEqualTo(transaction.getCustomerId());
-        assertThat(customer.getMonthlyPoints().get(transaction.getDate().getMonthValue())).isNotNull();
+        assertThat(customer.getMonthlyPoints().get(transaction.getDate().with(TemporalAdjusters.firstDayOfMonth()))).isNotNull();
     }
 }
