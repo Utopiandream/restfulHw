@@ -1,7 +1,6 @@
 package com.charter.restfulHw.service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,8 +38,9 @@ public class CustomerServiceImpl implements CustomerService {
             if (mappedCustomerPoints.get(customerId) == null) 
                 mappedCustomerPoints.put(customerId, initializeCustomer(transaction));
             else { // else addon to existing customer points for that month
-                Map<LocalDate, Long> monthlyPoints = mappedCustomerPoints.get(customerId).getMonthlyPoints();
-                LocalDate monthDate = transaction.getDate().with(TemporalAdjusters.firstDayOfMonth());
+                Map<String, Long> monthlyPoints = mappedCustomerPoints.get(customerId).getMonthlyPoints();
+                String monthDate = transaction.getDate().with(TemporalAdjusters.firstDayOfMonth()).toString();
+                monthlyPoints.putIfAbsent(monthDate, 0L);
                 monthlyPoints.put(monthDate, monthlyPoints.get(monthDate) + calculatePoints(transaction.getAmount()));
             }
         }
@@ -60,8 +60,8 @@ public class CustomerServiceImpl implements CustomerService {
         customerPoints.setFirstName(transaction.getFirstName());
         customerPoints.setLastName(transaction.getLastName());
         customerPoints.setCustomerId(transaction.getCustomerId());
-        Map<LocalDate, Long> monthlyPoints = new HashMap<LocalDate, Long>();
-        monthlyPoints.put(transaction.getDate().with(TemporalAdjusters.firstDayOfMonth()), calculatePoints(transaction.getAmount()));
+        Map<String, Long> monthlyPoints = new HashMap<String, Long>();
+        monthlyPoints.put(transaction.getDate().with(TemporalAdjusters.firstDayOfMonth()).toString(), calculatePoints(transaction.getAmount()));
         customerPoints.setMonthlyPoints(monthlyPoints);
         return customerPoints;
     }

@@ -1,6 +1,5 @@
 package com.charter.restfulHw.model;
 
-import java.time.LocalDate;
 import java.util.Map;
 
 import lombok.Data;
@@ -16,6 +15,6 @@ public class Customer {
 
     private String lastName;
 
-    private Map<LocalDate, Long> monthlyPoints;
+    private Map<String, Long> monthlyPoints;
     
 }

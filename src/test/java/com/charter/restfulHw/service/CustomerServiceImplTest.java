@@ -17,10 +17,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-@ActiveProfiles(profiles = "unitTest")
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class CustomerServiceImplTest {
@@ -161,11 +159,11 @@ public class CustomerServiceImplTest {
         for (Customer customer : results) {
             if(customer.getCustomerId() == transaction.getCustomerId())
             {
-                assertThat(customer.getMonthlyPoints().get(dateMonth))
+                assertThat(customer.getMonthlyPoints().get(dateMonth.toString()))
                 .isEqualTo(customerPointsServiceImpl.calculatePoints(transaction.getAmount()) * 3);
             }
             else {
-                assertThat(customer.getMonthlyPoints().get(dateMonth))
+                assertThat(customer.getMonthlyPoints().get(dateMonth.toString()))
                 .isEqualTo(customerPointsServiceImpl.calculatePoints(transaction2.getAmount()));    
             }
         }
@@ -189,9 +187,9 @@ public class CustomerServiceImplTest {
         //then
         assertThat(results.size()).isEqualTo(1);
         Customer customerResult = results.get(0);
-        assertThat(customerResult.getMonthlyPoints().get(dateMonth)).isNotNull();
-        assertThat(customerResult.getMonthlyPoints().get(dateMonth.plusMonths(1))).isNotNull();
-        assertThat(customerResult.getMonthlyPoints().get(dateMonth.minusMonths(1))).isNotNull();
+        assertThat(customerResult.getMonthlyPoints().get(dateMonth.toString())).isNotNull();
+        assertThat(customerResult.getMonthlyPoints().get(dateMonth.plusMonths(1).toString())).isNotNull();
+        assertThat(customerResult.getMonthlyPoints().get(dateMonth.minusMonths(1).toString())).isNotNull();
     }
 
     // ---------------------------------------------------------------//
@@ -207,6 +205,6 @@ public class CustomerServiceImplTest {
         assertThat(customer.getFirstName()).isEqualTo(transaction.getFirstName());
         assertThat(customer.getLastName()).isEqualTo(transaction.getLastName());
         assertThat(customer.getCustomerId()).isEqualTo(transaction.getCustomerId());
-        assertThat(customer.getMonthlyPoints().get(transaction.getDate().with(TemporalAdjusters.firstDayOfMonth()))).isNotNull();
+        assertThat(customer.getMonthlyPoints().get(transaction.getDate().with(TemporalAdjusters.firstDayOfMonth()).toString())).isNotNull();
     }
 }
