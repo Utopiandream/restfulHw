@@ -14,8 +14,6 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class Transaction {
-    private long transactionId;
-
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate date;

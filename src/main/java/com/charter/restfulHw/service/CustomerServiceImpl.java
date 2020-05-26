@@ -52,7 +52,7 @@ public class CustomerServiceImpl implements CustomerService {
         {
             try { verifyTransaction(transaction); }
             catch (IllegalArgumentException e) {
-                logger.warn("SKIPPED Transaction Id: {}, MemberId: {} Reason: {}", transaction.getTransactionId(), transaction.getCustomerId(), e.getMessage());
+                logger.warn("SKIPPED Transaction for MemberId: {} Reason: {}", transaction.getCustomerId(), e.getMessage());
                 continue;
             }
             long customerId = transaction.getCustomerId();

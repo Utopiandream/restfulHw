@@ -1,34 +1,37 @@
 [
     {
-        "transactionId": 1,
-        "date": "2020-01-30",
-        "customerId": "1",
+        "customerId": 1,
         "firstName": "Doug",
         "lastName": "Stroer",
+        "date": "2020-01-30",
         "amount": 100.54
     },
     {
-        "transactionId": 1,
-        "date": "2020-01-31",
-        "customerId": "1",
+        "customerId": 1,
         "firstName": "Doug",
         "lastName": "Stroer",
+        "date": "2020-01-31",
         "amount": 50.43
     },
     {
-        "transactionId": 1,
-        "date": "2020-02-28",
-        "customerId": "1",
-        "firstName": "Doug",
-        "lastName": "Stroer",
+        "customerId": 2,
+        "firstName": "June",
+        "lastName": "Smith",
+        "date": "2020-01-01",
         "amount": 120.32
     },
     {
-        "transactionId": 2,
-        "date": "2020-02-01",
-        "customerId": "2",
+        "customerId": 2,
         "firstName": "June",
+        "lastName": "Smith",
+        "date": "2020-01-01",
+        "amount": 120.32
+    },
+    {
+        "customerId": 1,
+        "firstName": "Doug",
         "lastName": "Stroer",
+        "date": "2020-02-28",
         "amount": 120.32
     }
 ]
