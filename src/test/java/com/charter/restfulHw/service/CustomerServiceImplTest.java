@@ -8,11 +8,13 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.charter.restfulHw.exception.NoDataFoundException;
 import com.charter.restfulHw.model.Customer;
 import com.charter.restfulHw.model.Transaction;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +123,9 @@ public class CustomerServiceImplTest {
     // ---------------------------------------------------------------//
     @Test
     public void testGetCustomerPoints_transactionListNull() {
-        assertThat(customerPointsServiceImpl.getCustomers(null)).isNull();
+        // assertThat(customerPointsServiceImpl.getCustomers(null)).isNull();
+        Assertions.assertThrows(NoDataFoundException.class,
+                () -> customerPointsServiceImpl.getCustomers(null));
     }
 
     @Test
@@ -208,5 +212,11 @@ public class CustomerServiceImplTest {
         assertThat(customer.getLastName()).isEqualTo(transaction.getLastName());
         assertThat(customer.getCustomerId()).isEqualTo(transaction.getCustomerId());
         assertThat(customer.getMonthlyPoints().get(transaction.getDate().with(TemporalAdjusters.firstDayOfMonth()).toString())).isNotNull();
+    }
+
+    
+    @Test
+    public void testGetStaticCustomers() {
+        assertThat(customerPointsServiceImpl.getStaticCustomers()).isNotNull();
     }
 }

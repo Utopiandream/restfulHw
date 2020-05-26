@@ -1,2 +1,3 @@
 logging:level.org.springframework: OFF
 logging.level.root: OFF
+spring.jackson.serialization.write-dates-as-timestamps: false

@@ -1,5 +1,7 @@
 package com.charter.restfulHw.service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -7,8 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.charter.restfulHw.exception.NoDataFoundException;
 import com.charter.restfulHw.model.Customer;
 import com.charter.restfulHw.model.Transaction;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,9 +26,26 @@ public class CustomerServiceImpl implements CustomerService {
     private static final Logger logger = LogManager.getLogger();
 
     @Override
+    public List<Customer> getStaticCustomers()
+    {
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("transactions.json");
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            List<Transaction> transactions = null;
+            try {
+                transactions = objectMapper.readValue(inputStream, new TypeReference<List<Transaction>>() {
+                });
+            } catch (IOException e) {
+                logger.warn("Could not parse transaction.json file, {}", e.getMessage());
+                e.printStackTrace();
+            }
+            return getCustomers(transactions);
+    }
+
+    @Override
     public List<Customer> getCustomers(List<Transaction> transactions)
     {
-        if (transactions == null) return null;
+        if (transactions == null) throw new NoDataFoundException();
             
         Map<Long, Customer> mappedCustomerPoints = new HashMap<Long, Customer>();
         for (Transaction transaction : transactions) 
