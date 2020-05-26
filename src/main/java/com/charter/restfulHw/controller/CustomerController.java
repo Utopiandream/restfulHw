@@ -9,23 +9,21 @@ import com.charter.restfulHw.service.CustomerService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping(CustomerController.API_PATH)
 public class CustomerController {
 
     // private static final String ERROR_PATH = "/error";
+    public static final String API_PATH = "/customer";
+    
 
     private CustomerService customerPointService;
 
     public CustomerController(CustomerService customerPointService) {
         this.customerPointService = customerPointService;
-    }
-
-    // TODO remove after intial loading
-    @GetMapping("/")
-    public String home() {
-        return "Hello World";
     }
 
     @PostMapping("/perMonth")
