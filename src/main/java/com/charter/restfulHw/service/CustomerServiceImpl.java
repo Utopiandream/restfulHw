@@ -24,19 +24,19 @@ import org.springframework.stereotype.Service;
 public class CustomerServiceImpl implements CustomerService {
 
     private static final Logger logger = LogManager.getLogger();
+    private static final String FILE_NAME = "transactions.json";
 
     @Override
     public List<Customer> getStaticCustomers()
     {
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("transactions.json");
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(FILE_NAME);
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             List<Transaction> transactions = null;
             try {
-                transactions = objectMapper.readValue(inputStream, new TypeReference<List<Transaction>>() {
-                });
+                transactions = objectMapper.readValue(inputStream, new TypeReference<List<Transaction>>() {});
             } catch (IOException e) {
-                logger.warn("Could not parse transaction.json file, {}", e.getMessage());
+                logger.warn("Could not parse json file {}, reason: {}", FILE_NAME, e.getMessage());
                 e.printStackTrace();
             }
             return getCustomers(transactions);
@@ -60,11 +60,15 @@ public class CustomerServiceImpl implements CustomerService {
             // if not yet mapped, initialize customer and insert
             if (mappedCustomerPoints.get(customerId) == null) 
                 mappedCustomerPoints.put(customerId, initializeCustomer(transaction));
-            else { // else addon to existing customer points for that month
-                Map<String, Long> monthlyPoints = mappedCustomerPoints.get(customerId).getMonthlyPoints();
+            else { // else addon to existing customer total points, and points for that month
+                Customer customer = mappedCustomerPoints.get(customerId);
+                Map<String, Long> monthlyPoints = customer.getMonthlyPoints();
                 String monthDate = transaction.getDate().with(TemporalAdjusters.firstDayOfMonth()).toString();
+                Long transactionPoints = calculatePoints(transaction.getAmount());
+
                 monthlyPoints.putIfAbsent(monthDate, 0L);
                 monthlyPoints.put(monthDate, monthlyPoints.get(monthDate) + calculatePoints(transaction.getAmount()));
+                customer.setTotalPoints(customer.getTotalPoints() + transactionPoints);
             }
         }
         return new ArrayList<Customer>(mappedCustomerPoints.values());
@@ -79,14 +83,16 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     protected Customer initializeCustomer(Transaction transaction) {
-        Customer customerPoints = new Customer();
-        customerPoints.setFirstName(transaction.getFirstName());
-        customerPoints.setLastName(transaction.getLastName());
-        customerPoints.setCustomerId(transaction.getCustomerId());
+        Customer customer = new Customer();
+        customer.setFirstName(transaction.getFirstName());
+        customer.setLastName(transaction.getLastName());
+        customer.setCustomerId(transaction.getCustomerId());
         Map<String, Long> monthlyPoints = new HashMap<String, Long>();
-        monthlyPoints.put(transaction.getDate().with(TemporalAdjusters.firstDayOfMonth()).toString(), calculatePoints(transaction.getAmount()));
-        customerPoints.setMonthlyPoints(monthlyPoints);
-        return customerPoints;
+        Long currentPoints = calculatePoints(transaction.getAmount());
+        customer.setTotalPoints(currentPoints);
+        monthlyPoints.put(transaction.getDate().with(TemporalAdjusters.firstDayOfMonth()).toString(), currentPoints);
+        customer.setMonthlyPoints(monthlyPoints);
+        return customer;
     }
 
     @Override

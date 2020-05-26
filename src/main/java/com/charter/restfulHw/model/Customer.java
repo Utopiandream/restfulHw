@@ -17,4 +17,6 @@ public class Customer {
 
     private Map<String, Long> monthlyPoints;
     
+    private Long totalPoints;
+    
 }

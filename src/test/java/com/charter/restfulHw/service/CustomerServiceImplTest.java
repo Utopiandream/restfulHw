@@ -15,7 +15,7 @@ import com.charter.restfulHw.model.Transaction;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -198,6 +198,28 @@ public class CustomerServiceImplTest {
         assertThat(customerResult.getMonthlyPoints().get(dateMonth.minusMonths(1).toString())).isNotNull();
     }
 
+    @Test
+    public void testGetCustomerPoints_TotalsMonth() {
+        //given
+        LocalDate dateMonth = createMockTranscation().getDate().with(TemporalAdjusters.firstDayOfMonth());
+        List<Transaction> transactions = new ArrayList<Transaction>();
+        Transaction transaction1 = createMockTranscation().setDate(dateMonth);
+        Transaction transaction2 = createMockTranscation().setDate(dateMonth.plusMonths(1));
+        Transaction transaction3 = createMockTranscation().setDate(dateMonth.minusMonths(1));
+        
+        transactions.add(transaction1);
+        transactions.add(transaction2);
+        transactions.add(transaction3);
+
+        //when
+        List<Customer> results = customerPointsServiceImpl.getCustomers(transactions);
+        //then
+        assertThat(results.size()).isEqualTo(1);
+        Customer customerResult = results.get(0);
+        assertThat(customerResult.getTotalPoints()).isEqualTo(50 * 3);
+    }
+
+
     // ---------------------------------------------------------------//
     // ---------------------initializeCustomerPoints------------------//
     // ---------------------------------------------------------------//
@@ -212,6 +234,7 @@ public class CustomerServiceImplTest {
         assertThat(customer.getLastName()).isEqualTo(transaction.getLastName());
         assertThat(customer.getCustomerId()).isEqualTo(transaction.getCustomerId());
         assertThat(customer.getMonthlyPoints().get(transaction.getDate().with(TemporalAdjusters.firstDayOfMonth()).toString())).isNotNull();
+        assertThat(customer.getTotalPoints()).isEqualTo(50);
     }
 
     
