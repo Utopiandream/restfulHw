@@ -240,6 +240,6 @@ public class CustomerServiceImplTest {
     
     @Test
     public void testGetStaticCustomers() {
-        assertThat(customerPointsServiceImpl.getStaticCustomers()).isNotNull();
+        assertThat(customerPointsServiceImpl.getCustomersFromFile()).isNotNull();
     }
 }

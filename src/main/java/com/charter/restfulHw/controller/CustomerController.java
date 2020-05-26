@@ -32,8 +32,8 @@ public class CustomerController {
     }
 
     @GetMapping("/perMonth")
-    public List<Customer> getStaticCustomers() {
-        return customerPointService.getStaticCustomers();
+    public List<Customer> getCustomersFromFile() {
+        return customerPointService.getCustomersFromFile();
     }
 
 }

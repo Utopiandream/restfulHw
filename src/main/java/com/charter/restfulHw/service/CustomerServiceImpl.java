@@ -6,8 +6,10 @@ import java.math.BigDecimal;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.charter.restfulHw.exception.NoDataFoundException;
 import com.charter.restfulHw.model.Customer;
@@ -27,8 +29,9 @@ public class CustomerServiceImpl implements CustomerService {
     private static final String FILE_NAME = "transactions.json";
 
     @Override
-    public List<Customer> getStaticCustomers()
+    public List<Customer> getCustomersFromFile()
     {
+        //Parses json file into List and calls getCustomers
             InputStream inputStream = getClass().getClassLoader().getResourceAsStream(FILE_NAME);
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -50,11 +53,13 @@ public class CustomerServiceImpl implements CustomerService {
         Map<Long, Customer> mappedCustomerPoints = new HashMap<Long, Customer>();
         for (Transaction transaction : transactions) 
         {
+            //If transaction in list missing required value, log and continue
             try { verifyTransaction(transaction); }
             catch (IllegalArgumentException e) {
                 logger.warn("SKIPPED Transaction with MemberId:{}; Reason: {}", transaction.getCustomerId(), e.getMessage());
                 continue;
             }
+
             long customerId = transaction.getCustomerId();
 
             // If not yet mapped, initialize customer and insert
@@ -72,7 +77,19 @@ public class CustomerServiceImpl implements CustomerService {
                 customer.setTotalPoints(customer.getTotalPoints() + transactionPoints);
             }
         }
-        return new ArrayList<Customer>(mappedCustomerPoints.values());
+        return sortAllCustomersMonthlyPointsMap(new ArrayList<Customer>(mappedCustomerPoints.values()));
+    }
+
+    private List<Customer> sortAllCustomersMonthlyPointsMap(ArrayList<Customer> customers){
+        //Loop through all customers and sort each mapped monthly values by date
+        for (Customer customer : customers) {
+            customer.setMonthlyPoints(customer.getMonthlyPoints()
+            .entrySet()
+            .stream()
+            .sorted(Map.Entry.comparingByKey())
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new)));
+        }
+        return customers;
     }
 
     private void verifyTransaction(Transaction transaction)

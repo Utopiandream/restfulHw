@@ -28,10 +28,24 @@
         "amount": 120.32
     },
     {
+        "customerId": 2,
+        "firstName": "June",
+        "lastName": "Smith",
+        "date": "2020-01-01",
+        "amount": 120.32
+    },
+    {
         "customerId": 1,
         "firstName": "Doug",
         "lastName": "Stroer",
         "date": "2020-02-28",
         "amount": 120.32
+    },
+    {
+        "customerId": 1,
+        "firstName": "Doug",
+        "lastName": "Stroer",
+        "date": "2020-03-15",
+        "amount": 101.54
     }
 ]

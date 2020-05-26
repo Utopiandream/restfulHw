@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface CustomerService 
 {
-    public List<Customer> getStaticCustomers();
+    public List<Customer> getCustomersFromFile();
 
     public List<Customer> getCustomers(List<Transaction> transactions);
 
