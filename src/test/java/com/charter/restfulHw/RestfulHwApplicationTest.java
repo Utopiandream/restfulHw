@@ -5,6 +5,6 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackageClasses = {
     RestfulHwApplication.class
 })
-public class RestfulHwApplicationTests	{
+public class RestfulHwApplicationTest	{
     
 }

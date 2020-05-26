@@ -36,7 +36,7 @@ public class CustomerServiceImpl implements CustomerService {
             try {
                 transactions = objectMapper.readValue(inputStream, new TypeReference<List<Transaction>>() {});
             } catch (IOException e) {
-                logger.warn("Could not parse json file {}, reason: {}", FILE_NAME, e.getMessage());
+                logger.warn("Could not parse json file {}; Reason: {}", FILE_NAME, e.getMessage());
                 e.printStackTrace();
             }
             return getCustomers(transactions);
@@ -52,22 +52,23 @@ public class CustomerServiceImpl implements CustomerService {
         {
             try { verifyTransaction(transaction); }
             catch (IllegalArgumentException e) {
-                logger.warn("SKIPPED Transaction for MemberId: {} Reason: {}", transaction.getCustomerId(), e.getMessage());
+                logger.warn("SKIPPED Transaction with MemberId:{}; Reason: {}", transaction.getCustomerId(), e.getMessage());
                 continue;
             }
             long customerId = transaction.getCustomerId();
 
-            // if not yet mapped, initialize customer and insert
+            // If not yet mapped, initialize customer and insert
             if (mappedCustomerPoints.get(customerId) == null) 
                 mappedCustomerPoints.put(customerId, initializeCustomer(transaction));
-            else { // else addon to existing customer total points, and points for that month
+            // Else add to existing customer total points, and mapped points for that month
+            else { 
                 Customer customer = mappedCustomerPoints.get(customerId);
                 Map<String, Long> monthlyPoints = customer.getMonthlyPoints();
                 String monthDate = transaction.getDate().with(TemporalAdjusters.firstDayOfMonth()).toString();
                 Long transactionPoints = calculatePoints(transaction.getAmount());
 
                 monthlyPoints.putIfAbsent(monthDate, 0L);
-                monthlyPoints.put(monthDate, monthlyPoints.get(monthDate) + calculatePoints(transaction.getAmount()));
+                monthlyPoints.put(monthDate, monthlyPoints.get(monthDate) + transactionPoints);
                 customer.setTotalPoints(customer.getTotalPoints() + transactionPoints);
             }
         }
