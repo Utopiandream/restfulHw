@@ -6,15 +6,18 @@ Given a record of every transaction during a three month period, calculate the r
 
 Api summary: Takes list of transactions, creates list of customers with mapped monthly points and total.
 
-Build project: ./mvnw clean package
-Run Project: java -jar /target/jarfile
+Build project: `./mvnw clean package`
+Run Project: `java -jar /target/jarfile`
 
-Api Request url: http://localhost:8080/customer/perMonth
-2 request types created Get & Post;
+## Api Request url: http://localhost:8080/customer/perMonth
+
+2 request types created Get & Post:
+
 1.) Get request will use transaction.json file within project to create return list. 
 2.) Post request expects a RequestBody with list of transactions via json. 
     (I recommend using postman to easily create and test your own data set).
-Transaction Json Example: 
+###### Transaction Json Example: 
+```
 [
     {
         "customerId": 4,
@@ -24,6 +27,7 @@ Transaction Json Example:
         "amount": 1000.32
     }
 ]
+```
 
 Logs are logged inside /logs folder within project
 
