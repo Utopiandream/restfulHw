@@ -18,14 +18,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.log4j.Log4j2;
+
 @Service
+@Log4j2
 public class CustomerServiceImpl implements CustomerService {
 
-    private static final Logger logger = LogManager.getLogger();
     private static final String FILE_NAME = "transactions.json";
 
     @Override
@@ -39,7 +39,7 @@ public class CustomerServiceImpl implements CustomerService {
             try {
                 transactions = objectMapper.readValue(inputStream, new TypeReference<List<Transaction>>() {});
             } catch (IOException e) {
-                logger.warn("Could not parse json file {}; Reason: {}", FILE_NAME, e.getMessage());
+                log.warn("Could not parse json file {}; Reason: {}", FILE_NAME, e.getMessage());
                 e.printStackTrace();
             }
             return getCustomers(transactions);
@@ -56,7 +56,7 @@ public class CustomerServiceImpl implements CustomerService {
             //If transaction in list missing required value, log and continue
             try { verifyTransaction(transaction); }
             catch (IllegalArgumentException e) {
-                logger.warn("SKIPPED Transaction with MemberId:{}; Reason: {}", transaction.getCustomerId(), e.getMessage());
+                log.warn("SKIPPED Transaction with MemberId:{}; Reason: {}", transaction.getCustomerId(), e.getMessage());
                 continue;
             }
 
