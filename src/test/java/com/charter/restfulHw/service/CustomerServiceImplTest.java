@@ -123,7 +123,6 @@ public class CustomerServiceImplTest {
     // ---------------------------------------------------------------//
     @Test
     public void testGetCustomerPoints_transactionListNull() {
-        // assertThat(customerPointsServiceImpl.getCustomers(null)).isNull();
         Assertions.assertThrows(NoDataFoundException.class,
                 () -> customerPointsServiceImpl.getCustomers(null));
     }
@@ -141,6 +140,7 @@ public class CustomerServiceImplTest {
         transactions.add(createMockTranscation().setLastName(null));
         transactions.add(createMockTranscation().setAmount(null));
         transactions.add(createMockTranscation().setDate(null));
+        transactions.add(createMockTranscation().setCustomerId(null));
         //when
         List<Customer> results = customerPointsServiceImpl.getCustomers(transactions);
         //then
@@ -153,7 +153,7 @@ public class CustomerServiceImplTest {
         List<Transaction> transactions = new ArrayList<Transaction>();
         Transaction transaction = createMockTranscation();
         Transaction transaction2 = createMockTranscation();
-        transaction2.setCustomerId(2);
+        transaction2.setCustomerId(2L);
         transactions.add(createMockTranscation());
         transactions.add(createMockTranscation());
         transactions.add(createMockTranscation());

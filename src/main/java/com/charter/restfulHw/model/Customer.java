@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class Customer {
 
-    private long customerId;
+    private Long customerId;
 
     private String firstName;
 

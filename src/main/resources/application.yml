@@ -5,5 +5,3 @@ spring:
     name: restfulHw
   jackson.serialization:
     write-dates-as-timestamps: false
-
-# server.context-path: /restfulHw

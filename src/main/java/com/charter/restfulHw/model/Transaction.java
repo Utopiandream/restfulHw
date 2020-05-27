@@ -18,7 +18,7 @@ public class Transaction {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate date;
 
-    private long customerId;
+    private Long customerId;
 
     private String firstName;
 

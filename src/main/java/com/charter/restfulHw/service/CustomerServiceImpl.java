@@ -95,7 +95,7 @@ public class CustomerServiceImpl implements CustomerService {
     private void verifyTransaction(Transaction transaction)
             throws IllegalArgumentException {
         if (transaction.getFirstName() == null || transaction.getLastName() == null  
-            || transaction.getAmount() == null || transaction.getDate() == null) 
+            || transaction.getAmount() == null || transaction.getDate() == null || transaction.getCustomerId() == null) 
             throw new IllegalArgumentException("Transaction cannot have null values!");
         
     }
