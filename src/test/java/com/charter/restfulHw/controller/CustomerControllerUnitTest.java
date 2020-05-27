@@ -10,12 +10,12 @@ import com.charter.restfulHw.model.Transaction;
 import com.charter.restfulHw.service.CustomerService;
 
 import org.easymock.EasyMock;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class CustomerControllerUnitTest {
     
     @Test
-    public void testCalculateCustomerPoints(){
+    public void testGetCustomers(){
         List<Customer> customerPoints = new ArrayList<Customer>();
         List<Transaction> transactions = new ArrayList<Transaction>();
         CustomerService customerPointService = EasyMock.createMock(CustomerService.class);
