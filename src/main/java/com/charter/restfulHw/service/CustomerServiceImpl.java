@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.charter.restfulHw.exception.NoDataFoundException;
 import com.charter.restfulHw.model.Customer;
 import com.charter.restfulHw.model.Transaction;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -48,16 +47,15 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<Customer> getCustomers(List<Transaction> transactions)
     {
-        if (transactions == null) throw new NoDataFoundException();
+        if (transactions == null) throw new IllegalArgumentException("Transactions cannot be null!");
             
         Map<Long, Customer> mappedCustomerPoints = new HashMap<Long, Customer>();
         for (Transaction transaction : transactions) 
         {
-            //If transaction in list missing required value, log and continue
+            //If transaction in list missing required value, throw exception with index (or a transcationId if it had one)
             try { verifyTransaction(transaction); }
             catch (IllegalArgumentException e) {
-                log.warn("SKIPPED Transaction with MemberId:{}; Reason: {}", transaction.getCustomerId(), e.getMessage());
-                continue;
+                throw new IllegalArgumentException("Transaction #" + (transactions.indexOf(transaction) + 1) + e.getMessage());
             }
 
             long customerId = transaction.getCustomerId();
@@ -92,12 +90,19 @@ public class CustomerServiceImpl implements CustomerService {
         return customers;
     }
 
-    private void verifyTransaction(Transaction transaction)
+    protected void verifyTransaction(Transaction transaction)
             throws IllegalArgumentException {
         if (transaction.getFirstName() == null || transaction.getLastName() == null  
-            || transaction.getAmount() == null || transaction.getDate() == null || transaction.getCustomerId() == null) 
-            throw new IllegalArgumentException("Transaction cannot have null values!");
-        
+            || transaction.getAmount() == null || transaction.getDate() == null || transaction.getCustomerId() == null) {
+                StringBuilder sBuilder = new StringBuilder();
+                sBuilder.append(" Missing values:");
+                if(transaction.getCustomerId() == null) sBuilder.append(" customerId ");
+                if(transaction.getDate() == null) sBuilder.append(" date ");
+                if(transaction.getFirstName() == null) sBuilder.append(" firstName ");
+                if(transaction.getLastName() == null) sBuilder.append(" lastName ");
+                if(transaction.getAmount() == null) sBuilder.append(" amount ");                
+                throw new IllegalArgumentException(sBuilder.toString());
+            }
     }
 
     protected Customer initializeCustomer(Transaction transaction) {

@@ -16,10 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(CustomerController.API_PATH)
 public class CustomerController {
 
-    // private static final String ERROR_PATH = "/error";
     public static final String API_PATH = "/customer";
     
-
     private CustomerService customerPointService;
 
     public CustomerController(CustomerService customerPointService) {

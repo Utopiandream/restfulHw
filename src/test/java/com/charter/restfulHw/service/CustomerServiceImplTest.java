@@ -8,7 +8,6 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.charter.restfulHw.exception.NoDataFoundException;
 import com.charter.restfulHw.model.Customer;
 import com.charter.restfulHw.model.Transaction;
 
@@ -123,28 +122,13 @@ public class CustomerServiceImplTest {
     // ---------------------------------------------------------------//
     @Test
     public void testGetCustomerPoints_transactionListNull() {
-        Assertions.assertThrows(NoDataFoundException.class,
+        Assertions.assertThrows(IllegalArgumentException.class,
                 () -> customerPointsServiceImpl.getCustomers(null));
     }
 
     @Test
     public void testGetCustomerPoints_transactionsEmpty() {
         assertThat(customerPointsServiceImpl.getCustomers(new ArrayList<Transaction>())).isEmpty();
-    }
-
-    @Test
-    public void testGetCustomerPoints_transactionsWithNullValueIgnored() {
-        //given
-        List<Transaction> transactions = new ArrayList<Transaction>();
-        transactions.add(createMockTranscation().setFirstName(null));
-        transactions.add(createMockTranscation().setLastName(null));
-        transactions.add(createMockTranscation().setAmount(null));
-        transactions.add(createMockTranscation().setDate(null));
-        transactions.add(createMockTranscation().setCustomerId(null));
-        //when
-        List<Customer> results = customerPointsServiceImpl.getCustomers(transactions);
-        //then
-        assertThat(results).isEmpty();
     }
 
     @Test
@@ -241,5 +225,18 @@ public class CustomerServiceImplTest {
     @Test
     public void testGetStaticCustomers() {
         assertThat(customerPointsServiceImpl.getCustomersFromFile()).isNotNull();
+    }
+
+    @Test
+    public void testVerifyTransaction_throwsExceptionAndListsNullAttributes(){
+        Transaction transaction = new Transaction();
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> customerPointsServiceImpl.verifyTransaction(transaction));
+    }
+
+    @Test
+    public void testVerifyTransaction_doesNotThrowIfNonNUll(){
+        Transaction transaction = createMockTranscation();
+        customerPointsServiceImpl.verifyTransaction(transaction);
     }
 }
