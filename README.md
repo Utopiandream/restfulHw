@@ -13,8 +13,9 @@ Run Project: `java -jar /target/jarfile`
 
 2 request types created Get & Post:
 
-1.) Get request will use transaction.json file within project to create return list. 
-2.) Post request expects a RequestBody with list of transactions via json. 
+1.) **GET** request will use **transaction.json** file within project to create return list.
+
+2.) **POST** request **expects a request body** with list of transactions via json. 
     (I recommend using postman to easily create and test your own data set).
 ###### Transaction Json Example: 
 ```
